@@ -5,6 +5,9 @@ from usm_user.serializers import AuthenticationRequestSerializer
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import AccessToken
 from usm_user.models import SubscriptionPlan, Subscription
+from rest_framework.permissions import IsAuthenticated
+from usm_user.serializers import UserDetailsSerializer
+from rest_framework.generics import RetrieveAPIView
 
 # Create your views here.
 class SignupView(APIView):
@@ -22,14 +25,14 @@ class SignupView(APIView):
         if User.objects.filter(email=validated_data['username'], is_active=True).exists():
             return Response({'error': 'An active user with this email already exists'}, status=status.HTTP_400_BAD_REQUEST)
         
-        # Create User
-        user_object = User(email=validated_data['username'])
-        user_object.set_password(validated_data['password'])
-        user_object.save()
-
         # Select Free Subscription Plan and create Subscription for User
         complementary_free_subscription = SubscriptionPlan.objects.get(id=1, is_active=True)
-        Subscription.objects.create(user=user_object, plan=complementary_free_subscription, is_active=True)
+        subscription = Subscription.objects.create(plan=complementary_free_subscription, is_active=True)
+
+        # Create User
+        user_object = User(email=validated_data['username'], subscription=subscription)
+        user_object.set_password(validated_data['password'])
+        user_object.save()
         
         # Create JWT Token for the user
         access_token = AccessToken.for_user(user_object)
@@ -68,3 +71,12 @@ class LoginView(APIView):
             'msg': 'Login successful'
         }
         return Response(response_content, status=status.HTTP_200_OK)
+    
+class ProfileView(RetrieveAPIView):
+
+    queryset = get_user_model().objects.all()
+    serializer_class = UserDetailsSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.queryset.get(id=self.request.user.id)

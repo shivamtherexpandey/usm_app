@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sumora - Smart Content Summarizer</title>
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3a0ca3;
+            --accent-color: #4cc9f0;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --success-color: #4bb543;
+            --error-color: #ff3333;
+            --gray-color: #6c757d;
+            --light-gray: #e9ecef;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: white;
+            box-shadow: var(--box-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+        }
+
+        .logo-icon svg {
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover .logo-icon svg {
+            transform: rotate(15deg) scale(1.1);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--dark-color);
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color);
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1.5rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--light-gray);
+        }
+
+        /* Main Content Styles */
+        main {
+            min-height: calc(100vh - 140px);
+            padding: 2rem 0;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Landing Page */
+        .hero {
+            text-align: center;
+            padding: 3rem 0;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--gray-color);
+            margin-bottom: 2rem;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        /* Auth Forms */
+        .auth-container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .auth-header h2 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--light-gray);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
+        }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .toggle-auth {
+            color: var(--primary-color);
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        /* Profile Page */
+        .profile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .profile-card {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 2rem;
+        }
+
+        .profile-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .info-item {
+            margin-bottom: 1rem;
+        }
+
+        .info-label {
+            font-weight: 500;
+            color: var(--gray-color);
+        }
+
+        .info-value {
+            margin-top: 0.25rem;
+        }
+
+        .subscription-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background-color: var(--success-color);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        /* Summarize Form */
+        .summarize-form {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .form-title {
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .url-input-group {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .url-input {
+            flex: 1;
+        }
+
+        /* Results Section */
+        .results-section {
+            margin-top: 2rem;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-top: 1.5rem;
+        }
+
+        .summary-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .summary-title {
+            color: var(--primary-color);
+        }
+
+        .summary-content {
+            line-height: 1.8;
+            white-space: pre-wrap;
+        }
+
+        /* Alert Styles */
+        .alert {
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-success {
+            background-color: rgba(75, 181, 67, 0.1);
+            border: 1px solid var(--success-color);
+            color: var(--success-color);
+        }
+
+        .alert-error {
+            background-color: rgba(255, 51, 51, 0.1);
+            border: 1px solid var(--error-color);
+            color: var(--error-color);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .url-input-group {
+                flex-direction: column;
+            }
+
+            .profile-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        .password-requirements {
+            margin-top: 0.25rem;
+            color: var(--gray-color);
+        }
+
+        .password-requirements small {
+            font-size: 0.8rem;
+        }
+
+        .password-match small {
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+            display: block;
+        }
+
+        /* Style for valid password confirmation */
+        .password-valid {
+            border-color: var(--success-color) !important;
+        }
+
+        .password-invalid {
+            border-color: var(--error-color) !important;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="#" class="logo" data-page="landing">
+                    <div class="logo-icon">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M16 4L20 12L28 16L20 20L16 28L12 20L4 16L12 12L16 4Z" fill="#4361ee"/>
+                            <path d="M16 8L18.5 13.5L24 16L18.5 18.5L16 24L13.5 18.5L8 16L13.5 13.5L16 8Z" fill="#4cc9f0"/>
+                            <circle cx="16" cy="16" r="2" fill="white"/>
+                        </svg>
+                    </div>
+                    <span>Sumora</span>
+                </a>
+                <div class="nav-links">
+                </div>
+                <div class="auth-buttons" id="auth-buttons">
+                    <button class="btn btn-outline" id="login-btn">Login</button>
+                    <button class="btn btn-primary" id="signup-btn">Sign Up</button>
+                </div>
+                <div id="user-menu" style="display: none;">
+                    <span id="user-email" style="margin-right: 1rem;"></span>
+                    <button class="btn btn-outline" id="logout-btn">Logout</button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <!-- Landing Page -->
+            <section id="landing-page" class="page active">
+                <div class="hero">
+                    <h1>Summarize Any Content with Sumora</h1>
+                    <p>Transform lengthy articles, videos, and audio into concise summaries with our AI-powered tool. Save time and extract key insights instantly.</p>
+                    <button class="btn btn-primary" id="get-started-btn">Get Started</button>
+                </div>
+                <div class="features">
+                    <div class="feature-card">
+                        <div class="feature-icon">🌐</div>
+                        <h3>Web Pages</h3>
+                        <p>Summarize articles, blog posts, and news from any website with a simple URL.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📹</div>
+                        <h3>YouTube Videos</h3>
+                        <p>Get the key points from YouTube videos without watching the entire content.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🎧</div>
+                        <h3>Audio Content</h3>
+                        <p>Extract important information from podcasts and audio files effortlessly.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sign Up Page -->
+            <section id="signup-page" class="page">
+                <div class="auth-container">
+                    <div class="auth-header">
+                        <h2>Create Your Sumora Account</h2>
+                        <p>Start summarizing content in minutes</p>
+                    </div>
+                    <form id="signup-form">
+                        <div class="form-group">
+                            <label for="signup-email" class="form-label">Email</label>
+                            <input type="email" id="signup-email" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-password" class="form-label">Password</label>
+                            <input type="password" id="signup-password" class="form-control" required minlength="8">
+                            <div class="password-requirements">
+                                <small>Password must be at least 8 characters long</small>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-confirm-password" class="form-label">Confirm Password</label>
+                            <input type="password" id="signup-confirm-password" class="form-control" required>
+                            <div class="password-match" id="password-match-message" style="display: none;">
+                                <small style="color: var(--error-color);">Passwords do not match</small>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;" id="signup-submit-btn" disabled>Sign Up</button>
+                        <div class="form-footer">
+                            <p>Already have an account? <span class="toggle-auth" data-page="login">Login</span></p>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Login Page -->
+            <section id="login-page" class="page">
+                <div class="auth-container">
+                    <div class="auth-header">
+                        <h2>Welcome Back to Sumora</h2>
+                        <p>Login to your account</p>
+                    </div>
+                    <form id="login-form">
+                        <div class="form-group">
+                            <label for="login-email" class="form-label">Email</label>
+                            <input type="email" id="login-email" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="login-password" class="form-label">Password</label>
+                            <input type="password" id="login-password" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+                        <div class="form-footer">
+                            <p>Don't have an account? <span class="toggle-auth" data-page="signup">Sign Up</span></p>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Profile Page -->
+            <section id="profile-page" class="page">
+                <div class="profile-header">
+                    <h2>Your Profile</h2>
+                    <button class="btn btn-primary" id="summarize-now-btn">Summarize Now</button>
+                </div>
+                <div class="profile-card">
+                    <h3>Account Information</h3>
+                    <div class="profile-info">
+                        <div class="info-item">
+                            <div class="info-label">Email</div>
+                            <div class="info-value" id="profile-email"></div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Account Created</div>
+                            <div class="info-value" id="profile-created"></div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Subscription</div>
+                            <div class="info-value">
+                                <span class="subscription-badge" id="subscription-plan">Free Complementary Subscription</span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Status</div>
+                            <div class="info-value" id="profile-status">Active</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-card">
+                    <h3>Recent Summaries</h3>
+                    <p id="recent-summaries-placeholder">Your summarized content will appear here.</p>
+                    <div id="recent-summaries-list"></div>
+                </div>
+            </section>
+
+            <!-- Summarize Page -->
+            <section id="summarize-page" class="page">
+                <h2>Summarize Content</h2>
+                <div class="summarize-form">
+                    <h3 class="form-title">Enter URL to Summarize</h3>
+                    <form id="summarize-form">
+                        <div class="form-group">
+                            <div class="url-input-group">
+                                <input type="url" id="content-url" class="form-control url-input" placeholder="https://example.com/article or https://youtube.com/watch?v=..." required>
+                                <button type="submit" class="btn btn-primary" id="summarize-submit-btn">
+                                    <span id="summarize-btn-text">Summarize</span>
+                                    <span id="summarize-spinner" class="spinner" style="display: none;"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="results-section" id="results-section" style="display: none;">
+                    <div class="summary-card">
+                        <div class="summary-header">
+                            <h3 class="summary-title">Summary</h3>
+                            <button class="btn btn-outline" id="copy-summary-btn">Copy</button>
+                        </div>
+                        <div class="summary-content" id="summary-content">
+                            <!-- Summary content will be displayed here -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 Sumora. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // API Base URL - Update this to match your Django backend
+        const API_BASE_URL = 'http://127.0.0.1:8000/usm/api';
+
+        // DOM Elements
+        const pages = document.querySelectorAll('.page');
+        const authButtons = document.getElementById('auth-buttons');
+        const userMenu = document.getElementById('user-menu');
+        // const userEmail = document.getElementById('user-email');
+        // const profileLink = document.getElementById('profile-link');
+        // const summarizeLink = document.getElementById('summarize-link');
+        const loginBtn = document.getElementById('login-btn');
+        const signupBtn = document.getElementById('signup-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        const getStartedBtn = document.getElementById('get-started-btn');
+        const summarizeNowBtn = document.getElementById('summarize-now-btn');
+        const signupForm = document.getElementById('signup-form');
+        const loginForm = document.getElementById('login-form');
+        const summarizeForm = document.getElementById('summarize-form');
+        const toggleAuthLinks = document.querySelectorAll('.toggle-auth');
+        const profileEmail = document.getElementById('profile-email');
+        const profileCreated = document.getElementById('profile-created');
+        const subscriptionPlan = document.getElementById('subscription-plan');
+        const resultsSection = document.getElementById('results-section');
+        const summaryContent = document.getElementById('summary-content');
+        const copySummaryBtn = document.getElementById('copy-summary-btn');
+        const summarizeSubmitBtn = document.getElementById('summarize-submit-btn');
+        const summarizeBtnText = document.getElementById('summarize-btn-text');
+        const summarizeSpinner = document.getElementById('summarize-spinner');
+        const signupPassword = document.getElementById('signup-password');
+        const signupConfirmPassword = document.getElementById('signup-confirm-password');
+        const passwordMatchMessage = document.getElementById('password-match-message');
+        const signupSubmitBtn = document.getElementById('signup-submit-btn');
+        const recentSummariesList = document.getElementById('recent-summaries-list');
+        const recentSummariesPlaceholder = document.getElementById('recent-summaries-placeholder');
+
+        // Application State
+        let authToken = localStorage.getItem('sumora_auth_token');
+        let currentUser = null;
+        let recentSummaries = JSON.parse(localStorage.getItem('sumora_recent_summaries') || '[]');
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is already logged in
+            checkAuthStatus();
+
+            // Event Listeners
+            loginBtn.addEventListener('click', () => showPage('login'));
+            signupBtn.addEventListener('click', () => showPage('signup'));
+            logoutBtn.addEventListener('click', handleLogout);
+            getStartedBtn.addEventListener('click', () => showPage('signup'));
+            summarizeNowBtn.addEventListener('click', () => showPage('summarize'));
+            
+            // Event listeners for password fields
+            if (signupPassword && signupConfirmPassword) {
+                signupPassword.addEventListener('input', validatePasswords);
+                signupConfirmPassword.addEventListener('input', validatePasswords);
+            }
+
+            // Form Submissions
+            signupForm.addEventListener('submit', handleSignup);
+            loginForm.addEventListener('submit', handleLogin);
+            summarizeForm.addEventListener('submit', handleSummarize);
+
+            // Toggle between login and signup
+            toggleAuthLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showPage(link.dataset.page);
+                });
+            });
+
+            // Navigation
+        document.querySelectorAll('.nav-link, .logo').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const page = link.dataset.page;
+                showPage(page);
+            });
+        });
+
+            // Copy summary button
+            copySummaryBtn.addEventListener('click', copySummary);
+        });
+
+        // Function to check authentication status and redirect
+        function checkAuthStatus() {
+            if (authToken) {
+                // Verify token is still valid by fetching user profile
+                fetchUserProfile()
+                    .then(() => {
+                        // Token is valid, automatically show profile page if user is logged in
+                        const currentPage = document.querySelector('.page.active').id.replace('-page', '');
+                        // If user is on landing/auth pages, redirect to profile
+                        if (['landing', 'login', 'signup'].includes(currentPage)) {
+                            showPage('profile');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Token validation failed:', error);
+                        localStorage.removeItem('sumora_auth_token');
+                        authToken = null;
+                    });
+            }
+        }        // Password validation function
+        function validatePasswords() {
+            const password = signupPassword.value;
+            const confirmPassword = signupConfirmPassword.value;
+            
+            // Check if passwords match and meet minimum requirements
+            const passwordsMatch = password === confirmPassword;
+            const passwordValid = password.length >= 8;
+            
+            // Show/hide error message and update styles
+            if (confirmPassword && !passwordsMatch) {
+                passwordMatchMessage.style.display = 'block';
+                signupConfirmPassword.classList.add('password-invalid');
+                signupConfirmPassword.classList.remove('password-valid');
+            } else {
+                passwordMatchMessage.style.display = 'none';
+                if (confirmPassword && passwordsMatch) {
+                    signupConfirmPassword.classList.add('password-valid');
+                    signupConfirmPassword.classList.remove('password-invalid');
+                } else {
+                    signupConfirmPassword.classList.remove('password-valid', 'password-invalid');
+                }
+            }
+            
+            // Enable/disable submit button
+            const formValid = passwordsMatch && passwordValid && password.length > 0;
+            signupSubmitBtn.disabled = !formValid;
+            
+            return formValid;
+        }
+
+        // Enhanced showPage function to reset form states
+        function showPage(pageId) {
+            pages.forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(`${pageId}-page`).classList.add('active');
+            
+            // Reset password validation when leaving signup page
+            if (pageId !== 'signup') {
+                if (passwordMatchMessage) {
+                    passwordMatchMessage.style.display = 'none';
+                }
+                if (signupConfirmPassword) {
+                    signupConfirmPassword.classList.remove('password-valid', 'password-invalid');
+                }
+                if (signupSubmitBtn) {
+                    signupSubmitBtn.disabled = true;
+                }
+            }
+            
+            // Update recent summaries when showing profile page
+            if (pageId === 'profile') {
+                updateRecentSummaries();
+            }
+        }
+
+        function getSimpleErrorMessage(data) {
+            if (data.password) return 'Invalid password';
+            if (data.username) return 'Invalid username';
+            if (data.error) return data.error;
+            return null;
+        }        
+
+
+        // Enhanced Handle User Signup with password confirmation
+        async function handleSignup(e) {
+            e.preventDefault();
+            
+            // Validate passwords before submission
+            if (!validatePasswords()) {
+                showAlert('Please ensure passwords match and meet requirements.', 'error');
+                return;
+            }
+            
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/user/signup`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: email,
+                        password: password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Save token and update UI
+                    authToken = data.access_token;
+                    localStorage.setItem('sumora_auth_token', authToken);
+                    showAlert('Account created successfully!', 'success');
+                    await fetchUserProfile();
+                    showPage('profile');
+                } else {
+                    const errorMessage = getSimpleErrorMessage(data) || 'Signup failed. Please try again.';
+                    showAlert(errorMessage, 'error');
+                }
+            } catch (error) {
+                console.error('Signup error:', error);
+                showAlert('Network error. Please try again.', 'error');
+            }
+        }
+
+        // Handle User Login
+        async function handleLogin(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/user/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: email,
+                        password: password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Save token and update UI
+                    authToken = data.access_token;
+                    localStorage.setItem('sumora_auth_token', authToken);
+                    showAlert('Login successful!', 'success');
+                    await fetchUserProfile();
+                    showPage('profile');
+                } else {
+                    const errorMessage = getSimpleErrorMessage(data) || 'Login failed. Please check your credentials.';
+                    showAlert(errorMessage, 'error');s
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showAlert('Network error. Please try again.', 'error');
+            }
+        }
+
+        // Fetch User Profile
+        async function fetchUserProfile() {
+            if (!authToken) {
+                throw new Error('No authentication token found');
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/user/profile`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    currentUser = data;
+                    updateUIForLoggedInUser();
+                    return data;
+                } else {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'Failed to fetch profile');
+                }
+            } catch (error) {
+                console.error('Profile fetch error:', error);
+                throw error;
+            }
+        }
+
+        // Update UI for logged in user
+        function updateUIForLoggedInUser() {
+            if (currentUser) {
+                // Update navigation - only show logout button
+                authButtons.style.display = 'none';
+                userMenu.style.display = 'flex';
+                
+                // Update profile page info (removed username update)
+                profileEmail.textContent = currentUser.email;
+                profileCreated.textContent = new Date(currentUser.created_at).toLocaleDateString();
+                
+                if (currentUser.subscription && currentUser.subscription.plan) {
+                    subscriptionPlan.textContent = currentUser.subscription.plan.name;
+                }
+            }
+        }        // Handle Logout
+        function handleLogout() {
+            authToken = null;
+            currentUser = null;
+            localStorage.removeItem('sumora_auth_token');
+            
+            // Reset UI
+            authButtons.style.display = 'flex';
+            userMenu.style.display = 'none';
+            profileLink.style.display = 'none';
+            summarizeLink.style.display = 'none';
+            
+            // Clear forms
+            signupForm.reset();
+            loginForm.reset();
+            summarizeForm.reset();
+            
+            // Hide results section
+            resultsSection.style.display = 'none';
+            
+            // Show landing page
+            showPage('landing');
+            
+            showAlert('You have been logged out.', 'success');
+        }
+
+        // Handle Content Summarization (Demo Version)
+        async function handleSummarize(e) {
+            e.preventDefault();
+            
+            if (!authToken) {
+                showAlert('Please log in to summarize content.', 'error');
+                showPage('login');
+                return;
+            }
+            
+            const url = document.getElementById('content-url').value;
+            
+            if (!url) {
+                showAlert('Please enter a valid URL.', 'error');
+                return;
+            }
+            
+            // Show loading state
+            summarizeBtnText.textContent = 'Summarizing...';
+            summarizeSpinner.style.display = 'inline-block';
+            summarizeSubmitBtn.disabled = true;
+            
+            try {
+                // Simulate API call with timeout
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                // Generate demo summary based on URL type
+                let demoSummary = '';
+                if (url.includes('youtube.com') || url.includes('youtu.be')) {
+                    demoSummary = `YouTube Video Summary (Demo):\n\nThis is a demo summary for the YouTube video at: ${url}\n\nKey points from this video would include:\n• Main topic overview\n• Important insights and findings\n• Key takeaways for the viewer\n• Actionable recommendations\n\nWhen integrated with the actual API, this would show a real summary extracted from the video content.`;
+                } else if (url.includes('spotify.com') || url.includes('podcast')) {
+                    demoSummary = `Audio/Podcast Summary (Demo):\n\nThis is a demo summary for the audio content at: ${url}\n\nKey discussion points would include:\n• Main themes and topics covered\n• Important quotes or statements\n• Key insights shared by speakers\n• Main conclusions or calls to action\n\nWhen integrated with the actual API, this would show a real summary extracted from the audio content.`;
+                } else {
+                    demoSummary = `Web Page Summary (Demo):\n\nThis is a demo summary for the web page at: ${url}\n\nKey content points would include:\n• Main topic and thesis of the article\n• Important facts and statistics\n• Key arguments and supporting evidence\n• Conclusions and recommendations\n\nWhen integrated with the actual API, this would show a real summary extracted from the web page content.`;
+                }
+                
+                // Display the summary
+                summaryContent.textContent = demoSummary;
+                resultsSection.style.display = 'block';
+                
+                // Save to recent summaries
+                saveToRecentSummaries(url, demoSummary);
+                
+                // Scroll to results
+                resultsSection.scrollIntoView({ behavior: 'smooth' });
+                
+                showAlert('Demo summary generated successfully!', 'success');
+            } catch (error) {
+                console.error('Summarization error:', error);
+                showAlert('Error generating summary. Please try again.', 'error');
+            } finally {
+                // Reset button state
+                summarizeBtnText.textContent = 'Summarize';
+                summarizeSpinner.style.display = 'none';
+                summarizeSubmitBtn.disabled = false;
+            }
+        }
+
+        // Save summary to recent summaries
+        function saveToRecentSummaries(url, summary) {
+            const summaryItem = {
+                id: Date.now(),
+                url: url,
+                summary: summary,
+                date: new Date().toLocaleString(),
+                type: url.includes('youtube') ? 'YouTube' : 
+                      url.includes('spotify') || url.includes('podcast') ? 'Audio' : 'Web Page'
+            };
+            
+            recentSummaries.unshift(summaryItem);
+            // Keep only the last 5 summaries
+            if (recentSummaries.length > 5) {
+                recentSummaries = recentSummaries.slice(0, 5);
+            }
+            
+            localStorage.setItem('sumora_recent_summaries', JSON.stringify(recentSummaries));
+            updateRecentSummaries();
+        }
+
+        // Update recent summaries display
+        function updateRecentSummaries() {
+            if (recentSummaries.length === 0) {
+                recentSummariesPlaceholder.style.display = 'block';
+                recentSummariesList.innerHTML = '';
+                return;
+            }
+            
+            recentSummariesPlaceholder.style.display = 'none';
+            recentSummariesList.innerHTML = recentSummaries.map(item => `
+                <div class="summary-card" style="margin-top: 1rem;">
+                    <div class="summary-header">
+                        <h4 class="summary-title">${item.type} Summary</h4>
+                        <small>${item.date}</small>
+                    </div>
+                    <p><strong>URL:</strong> ${item.url}</p>
+                    <div class="summary-content" style="margin-top: 1rem; font-size: 0.9rem;">
+                        ${item.summary.substring(0, 200)}...
+                    </div>
+                    <button class="btn btn-outline" onclick="viewFullSummary(${item.id})" style="margin-top: 1rem;">View Full</button>
+                </div>
+            `).join('');
+        }
+
+        // View full summary
+        function viewFullSummary(id) {
+            const summary = recentSummaries.find(item => item.id === id);
+            if (summary) {
+                summaryContent.textContent = summary.summary;
+                document.getElementById('content-url').value = summary.url;
+                resultsSection.style.display = 'block';
+                showPage('summarize');
+                resultsSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Copy summary to clipboard
+        function copySummary() {
+            const summaryText = summaryContent.textContent;
+            
+            navigator.clipboard.writeText(summaryText)
+                .then(() => {
+                    // Show temporary success message on button
+                    const originalText = copySummaryBtn.textContent;
+                    copySummaryBtn.textContent = 'Copied!';
+                    setTimeout(() => {
+                        copySummaryBtn.textContent = originalText;
+                    }, 2000);
+                })
+                .catch(err => {
+                    console.error('Failed to copy text: ', err);
+                    showAlert('Failed to copy summary to clipboard.', 'error');
+                });
+        }
+
+        // Show alert message
+        function showAlert(message, type) {
+            // Remove any existing alerts
+            const existingAlerts = document.querySelectorAll('.alert');
+            existingAlerts.forEach(alert => alert.remove());
+            
+            // Create new alert
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            
+            // Insert alert at the top of the main content
+            const main = document.querySelector('main .container');
+            main.insertBefore(alert, main.firstChild);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.parentNode.removeChild(alert);
+                }
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
