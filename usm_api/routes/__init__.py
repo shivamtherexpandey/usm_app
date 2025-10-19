@@ -1,0 +1,1 @@
+from routes.summarizer import summarizer_router
