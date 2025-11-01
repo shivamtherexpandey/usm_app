@@ -11,3 +11,9 @@ class Config:
     SQL_DB_URL = f"mysql+pymysql://{SQL_USER}:{SQL_PASSWORD}@{SQL_HOST}:{SQL_PORT}/{SQL_DB_NAME}"
 
     SECRET_KEY = os.getenv("SECRET_KEY")
+    BROKER_URL = os.getenv("BROKER_URL")
+
+    TIMEZONE = os.getenv("TIMEZONE", "Asia/Kolkata")
+    SUMMARIZATION_LLM_MODEL = os.getenv("SUMMARIZATION_LLM_MODEL")
+    SUMMARIZATION_METHOD = os.getenv('  ', 'map_reduce')
+    LLM_API_KEY = os.getenv('GOOGLE_API_KEY')

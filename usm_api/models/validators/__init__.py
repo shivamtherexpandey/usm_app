@@ -1,1 +1,2 @@
 from models.validators.exceptions import ErrorResponse
+from models.validators.request import SummarizerRequest

@@ -3,12 +3,12 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.types import ASGIApp
 from sqlalchemy.orm import Session
-from utility.database.sql_utils import SessionLocal
+from utility import database_helper
 
 class DBSessionMiddleware(BaseHTTPMiddleware):
     def __init__(self, app: ASGIApp):
         super().__init__(app)
-        self.session_maker = SessionLocal
+        self.session_maker = database_helper.SessionLocal
 
     async def dispatch(self, request: Request, call_next):
         # Create a new session and attach to request.state

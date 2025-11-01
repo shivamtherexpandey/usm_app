@@ -1,0 +1,1 @@
+from async_tasks.tasks import generate_summary
