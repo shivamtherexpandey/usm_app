@@ -5,9 +5,9 @@ from sqlalchemy import select
 from utility import logger
 from summarization_tools import SummaryTool
 
-@celery_app.task(max_retries=3, default_retry_delay=60)
-def generate_summary(summary_id: int, db_session = database_helper.get_sql_session()) -> None:
-    db_session = next(db_session)
+@celery_app.task(bind=True, max_retries=3, default_retry_delay=60)
+def generate_summary(self, summary_id: int) -> None:
+    db_session = database_helper.SessionLocal()
     logger.info(f'Request received to generate summary for id {summary_id}')
     
     # Extract Summary object
@@ -20,7 +20,8 @@ def generate_summary(summary_id: int, db_session = database_helper.get_sql_sessi
     except Exception as e:
         logger.error(f'Error {e}')
         logger.error(f'No summary object exists with id {summary_id}')
-        return
+        db_session.close()
+        raise self.retry(exc=e)
     
     summary_object = summary_object[0]
 
@@ -44,9 +45,11 @@ def generate_summary(summary_id: int, db_session = database_helper.get_sql_sessi
         db_session.refresh(summary_object)
 
     except Exception as e:
-        logger.error(f'Error in saving summary with id {summary_id} : ', e)
+        logger.error(f'Error in saving summary with id {summary_id} : {e}')
         db_session.rollback()
-        return
-    
+        db_session.close()
+        raise self.retry(exc=e)
+
     logger.info(f'Generated summary for id {summary_id}')
+    db_session.close()
     return 

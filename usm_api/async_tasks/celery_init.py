@@ -18,4 +18,4 @@ celery_app.conf.update(
 )
 
 # celery cmd
-# celery -A async_tasks.celery_init:celery_app worker -l info -P gevent
+# celery -A async_tasks.celery_init:celery_app worker -l info -P gevent -Q summarization_queue
