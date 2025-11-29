@@ -131,6 +131,15 @@
             background-color: var(--light-gray);
         }
 
+        .btn-danger {
+            background-color: var(--error-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #cc0000;
+        }
+
         /* Main Content Styles */
         main {
             min-height: calc(100vh - 140px);
@@ -373,6 +382,59 @@
             text-align: center;
         }
 
+        /* Explore Summaries Page */
+        .explore-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .summary-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .summary-item {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .summary-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .summary-item-url {
+            font-weight: 500;
+            color: var(--primary-color);
+            word-break: break-all;
+        }
+
+        .summary-item-date {
+            color: var(--gray-color);
+            font-size: 0.9rem;
+        }
+
+        .summary-item-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        /* Infinite Scroll Loader */
+        .infinite-scroll-loader {
+            text-align: center;
+            padding: 2rem;
+            display: none;
+        }
+
         /* Responsive Styles */
         @media (max-width: 768px) {
             .navbar {
@@ -397,6 +459,17 @@
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 1rem;
+            }
+
+            .explore-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .summary-item-header {
+                flex-direction: column;
+                gap: 0.5rem;
             }
         }
 
@@ -558,7 +631,10 @@
             <section id="profile-page" class="page">
                 <div class="profile-header">
                     <h2>Your Profile</h2>
-                    <button class="btn btn-primary" id="summarize-now-btn">Summarize Now</button>
+                    <div>
+                        <button class="btn btn-outline" id="explore-summaries-btn">Explore Past Summaries</button>
+                        <button class="btn btn-primary" id="summarize-now-btn">Summarize Now</button>
+                    </div>
                 </div>
                 <div class="profile-card">
                     <h3>Account Information</h3>
@@ -584,7 +660,14 @@
                     </div>
                 </div>
                 <div class="profile-card">
-                    <h3>Recent Summaries</h3>
+                    <div class="profile-header">
+                        <h3>Recent Summaries</h3>
+                        <button class="btn btn-outline" id="refresh-summaries-btn">Refresh</button>
+                    </div>
+                    <div id="recent-summaries-loading" style="display: none; text-align: center; padding: 2rem;">
+                        <div class="spinner" style="border-top-color: var(--primary-color);"></div>
+                        <p style="margin-top: 1rem;">Loading recent summaries...</p>
+                    </div>
                     <p id="recent-summaries-placeholder">Your summarized content will appear here.</p>
                     <div id="recent-summaries-list"></div>
                 </div>
@@ -592,7 +675,13 @@
 
             <!-- Summarize Page -->
             <section id="summarize-page" class="page">
-                <h2>Summarize Content</h2>
+                <div class="profile-header">
+                    <h2>Summarize Content</h2>
+                    <div>
+                        <button class="btn btn-outline" id="back-to-profile-btn">Back to Profile</button>
+                        <button class="btn btn-primary" id="summarize-now-btn-2">Summarize Now</button>
+                    </div>
+                </div>
                 <div class="summarize-form">
                     <h3 class="form-title">Enter URL to Summarize</h3>
                     <form id="summarize-form">
@@ -611,12 +700,47 @@
                     <div class="summary-card">
                         <div class="summary-header">
                             <h3 class="summary-title">Summary</h3>
-                            <button class="btn btn-outline" id="copy-summary-btn">Copy</button>
+                            <div>
+                                <button class="btn btn-outline" id="copy-summary-btn">Copy</button>
+                                <button class="btn btn-danger" id="delete-summary-btn" style="margin-left: 10px;">Delete Summary</button>
+                            </div>
                         </div>
                         <div class="summary-content" id="summary-content">
                             <!-- Summary content will be displayed here -->
                         </div>
                     </div>
+                </div>
+            </section>
+
+            <!-- Explore Past Summaries Page -->
+            <section id="explore-summaries-page" class="page">
+                <div class="explore-header">
+                    <h2>Explore Past Summaries</h2>
+                    <div>
+                        <button class="btn btn-outline" id="back-to-profile-btn-2">Back to Profile</button>
+                        <button class="btn btn-primary" id="generate-summary-btn">Generate New Summary</button>
+                    </div>
+                </div>
+                
+                <div id="explore-summaries-loading" style="display: none; text-align: center; padding: 2rem;">
+                    <div class="spinner" style="border-top-color: var(--primary-color);"></div>
+                    <p style="margin-top: 1rem;">Loading summaries...</p>
+                </div>
+                
+                <div id="explore-summaries-content" style="display: none;">
+                    <div class="summary-list" id="explore-summaries-list"></div>
+                    
+                    <!-- Infinite Scroll Loader -->
+                    <div class="infinite-scroll-loader" id="infinite-scroll-loader">
+                        <div class="spinner" style="border-top-color: var(--primary-color);"></div>
+                        <p style="margin-top: 1rem;">Loading more summaries...</p>
+                    </div>
+                </div>
+                
+                <div id="explore-summaries-empty" style="display: none; text-align: center; padding: 3rem;">
+                    <h3>No summaries found</h3>
+                    <p>You haven't created any summaries yet.</p>
+                    <button class="btn btn-primary" id="create-first-summary-btn">Create Your First Summary</button>
                 </div>
             </section>
         </div>
@@ -629,21 +753,23 @@
     </footer>
 
     <script>
-        // API Base URL - Update this to match your Django backend
-        const API_BASE_URL = 'http://127.0.0.1:8000/usm/api';
+        // Configuration
+        const SUMMARIZER_HOST = '{{ summarizer_host }}'; // Replace with actual host
+        const SUMMARIES_PER_PAGE = 10;
 
         // DOM Elements
         const pages = document.querySelectorAll('.page');
         const authButtons = document.getElementById('auth-buttons');
         const userMenu = document.getElementById('user-menu');
-        // const userEmail = document.getElementById('user-email');
-        // const profileLink = document.getElementById('profile-link');
-        // const summarizeLink = document.getElementById('summarize-link');
+        const userEmail = document.getElementById('user-email');
         const loginBtn = document.getElementById('login-btn');
         const signupBtn = document.getElementById('signup-btn');
         const logoutBtn = document.getElementById('logout-btn');
         const getStartedBtn = document.getElementById('get-started-btn');
         const summarizeNowBtn = document.getElementById('summarize-now-btn');
+        const summarizeNowBtn2 = document.getElementById('summarize-now-btn-2');
+        const exploreSummariesBtn = document.getElementById('explore-summaries-btn');
+        const refreshSummariesBtn = document.getElementById('refresh-summaries-btn');
         const signupForm = document.getElementById('signup-form');
         const loginForm = document.getElementById('login-form');
         const summarizeForm = document.getElementById('summarize-form');
@@ -654,6 +780,7 @@
         const resultsSection = document.getElementById('results-section');
         const summaryContent = document.getElementById('summary-content');
         const copySummaryBtn = document.getElementById('copy-summary-btn');
+        const deleteSummaryBtn = document.getElementById('delete-summary-btn');
         const summarizeSubmitBtn = document.getElementById('summarize-submit-btn');
         const summarizeBtnText = document.getElementById('summarize-btn-text');
         const summarizeSpinner = document.getElementById('summarize-spinner');
@@ -663,11 +790,33 @@
         const signupSubmitBtn = document.getElementById('signup-submit-btn');
         const recentSummariesList = document.getElementById('recent-summaries-list');
         const recentSummariesPlaceholder = document.getElementById('recent-summaries-placeholder');
+        const recentSummariesLoading = document.getElementById('recent-summaries-loading');
+        const backToProfileBtn = document.getElementById('back-to-profile-btn');
+        const backToProfileBtn2 = document.getElementById('back-to-profile-btn-2');
+        const contentUrlInput = document.getElementById('content-url');
+        
+        // Explore Summaries Page Elements
+        const exploreSummariesPage = document.getElementById('explore-summaries-page');
+        const exploreSummariesLoading = document.getElementById('explore-summaries-loading');
+        const exploreSummariesContent = document.getElementById('explore-summaries-content');
+        const exploreSummariesList = document.getElementById('explore-summaries-list');
+        const exploreSummariesEmpty = document.getElementById('explore-summaries-empty');
+        const generateSummaryBtn = document.getElementById('generate-summary-btn');
+        const createFirstSummaryBtn = document.getElementById('create-first-summary-btn');
+        const infiniteScrollLoader = document.getElementById('infinite-scroll-loader');
 
         // Application State
         let authToken = localStorage.getItem('sumora_auth_token');
         let currentUser = null;
-        let recentSummaries = JSON.parse(localStorage.getItem('sumora_recent_summaries') || '[]');
+        let recentSummaries = [];
+        let isViewingFullSummary = false;
+        let currentSummaryId = null;
+        
+        // Infinite Scroll State
+        let currentPage = 1;
+        let isLoading = false;
+        let hasMore = true;
+        let allExploreSummaries = [];
 
         // Initialize the application
         document.addEventListener('DOMContentLoaded', function() {
@@ -680,6 +829,22 @@
             logoutBtn.addEventListener('click', handleLogout);
             getStartedBtn.addEventListener('click', () => showPage('signup'));
             summarizeNowBtn.addEventListener('click', () => showPage('summarize'));
+            summarizeNowBtn2.addEventListener('click', () => showPage('summarize'));
+            exploreSummariesBtn.addEventListener('click', () => {
+                currentPage = 1;
+                allExploreSummaries = [];
+                showPage('explore-summaries');
+                fetchExploreSummaries();
+            });
+            refreshSummariesBtn.addEventListener('click', fetchRecentSummaries);
+            backToProfileBtn.addEventListener('click', () => showPage('profile'));
+            backToProfileBtn2.addEventListener('click', () => showPage('profile'));
+            deleteSummaryBtn.addEventListener('click', handleDeleteSummary);
+            generateSummaryBtn.addEventListener('click', () => showPage('summarize'));
+            createFirstSummaryBtn.addEventListener('click', () => showPage('summarize'));
+            
+            // Infinite scroll event listener
+            window.addEventListener('scroll', handleInfiniteScroll);
             
             // Event listeners for password fields
             if (signupPassword && signupConfirmPassword) {
@@ -701,17 +866,33 @@
             });
 
             // Navigation
-        document.querySelectorAll('.nav-link, .logo').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const page = link.dataset.page;
-                showPage(page);
+            document.querySelectorAll('.nav-link, .logo').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const page = link.dataset.page;
+                    showPage(page);
+                });
             });
-        });
 
             // Copy summary button
             copySummaryBtn.addEventListener('click', copySummary);
         });
+
+        // Infinite Scroll Handler
+        function handleInfiniteScroll() {
+            if (isLoading || !hasMore) return;
+            
+            const explorePage = document.getElementById('explore-summaries-page');
+            if (!explorePage.classList.contains('active')) return;
+            
+            const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+            
+            // Load more when user is 100px from bottom
+            if (scrollTop + clientHeight >= scrollHeight - 100) {
+                currentPage++;
+                fetchExploreSummaries();
+            }
+        }
 
         // Function to check authentication status and redirect
         function checkAuthStatus() {
@@ -732,7 +913,9 @@
                         authToken = null;
                     });
             }
-        }        // Password validation function
+        }
+
+        // Password validation function
         function validatePasswords() {
             const password = signupPassword.value;
             const confirmPassword = signupConfirmPassword.value;
@@ -785,7 +968,14 @@
             
             // Update recent summaries when showing profile page
             if (pageId === 'profile') {
-                updateRecentSummaries();
+                fetchRecentSummaries();
+                isViewingFullSummary = false;
+                resetSummarizePage();
+            }
+            
+            // Reset summarize page when navigating away
+            if (pageId !== 'summarize') {
+                resetSummarizePage();
             }
         }
 
@@ -795,7 +985,6 @@
             if (data.error) return data.error;
             return null;
         }        
-
 
         // Enhanced Handle User Signup with password confirmation
         async function handleSignup(e) {
@@ -811,7 +1000,7 @@
             const password = document.getElementById('signup-password').value;
             
             try {
-                const response = await fetch(`${API_BASE_URL}/user/signup`, {
+                const response = await fetch(`{% url 'signup' %}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -849,7 +1038,7 @@
             const password = document.getElementById('login-password').value;
             
             try {
-                const response = await fetch(`${API_BASE_URL}/user/login`, {
+                const response = await fetch(`{% url 'login' %}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -871,7 +1060,7 @@
                     showPage('profile');
                 } else {
                     const errorMessage = getSimpleErrorMessage(data) || 'Login failed. Please check your credentials.';
-                    showAlert(errorMessage, 'error');s
+                    showAlert(errorMessage, 'error');
                 }
             } catch (error) {
                 console.error('Login error:', error);
@@ -886,7 +1075,7 @@
             }
             
             try {
-                const response = await fetch(`${API_BASE_URL}/user/profile`, {
+                const response = await fetch(`{% url 'profile' %}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${authToken}`
@@ -914,6 +1103,7 @@
                 // Update navigation - only show logout button
                 authButtons.style.display = 'none';
                 userMenu.style.display = 'flex';
+                userEmail.textContent = currentUser.email;
                 
                 // Update profile page info (removed username update)
                 profileEmail.textContent = currentUser.email;
@@ -923,7 +1113,9 @@
                     subscriptionPlan.textContent = currentUser.subscription.plan.name;
                 }
             }
-        }        // Handle Logout
+        }
+
+        // Handle Logout
         function handleLogout() {
             authToken = null;
             currentUser = null;
@@ -932,8 +1124,6 @@
             // Reset UI
             authButtons.style.display = 'flex';
             userMenu.style.display = 'none';
-            profileLink.style.display = 'none';
-            summarizeLink.style.display = 'none';
             
             // Clear forms
             signupForm.reset();
@@ -949,7 +1139,300 @@
             showAlert('You have been logged out.', 'success');
         }
 
-        // Handle Content Summarization (Demo Version)
+        // Fetch Recent Summaries from API
+        async function fetchRecentSummaries() {
+            if (!authToken) {
+                console.error('No authentication token found');
+                return;
+            }
+            
+            try {
+                // Show loading state
+                recentSummariesLoading.style.display = 'block';
+                recentSummariesPlaceholder.style.display = 'none';
+                recentSummariesList.innerHTML = '';
+                
+                const response = await fetch(`${SUMMARIZER_HOST}/summarizer/list?page=1&offset=2`, {
+                    method: 'GET',
+                    headers: {
+                        'accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    recentSummaries = data.summaries;
+                    updateRecentSummaries();
+                } else {
+                    console.error('Failed to fetch recent summaries:', response.status);
+                    showAlert('Failed to load recent summaries. Please try again.', 'error');
+                }
+            } catch (error) {
+                console.error('Error fetching recent summaries:', error);
+                showAlert('Network error. Please try again.', 'error');
+            } finally {
+                recentSummariesLoading.style.display = 'none';
+            }
+        }
+
+        // Update recent summaries display
+        function updateRecentSummaries() {
+            if (recentSummaries.length === 0) {
+                recentSummariesPlaceholder.style.display = 'block';
+                recentSummariesList.innerHTML = '';
+                return;
+            }
+            
+            recentSummariesPlaceholder.style.display = 'none';
+            recentSummariesList.innerHTML = recentSummaries.map(item => `
+                <div class="summary-card" style="margin-top: 1rem;">
+                    <div class="summary-header">
+                        <h4 class="summary-title"><strong>URL:</strong> ${item.url}</h4>
+                        <small>${new Date(item.created_at).toLocaleDateString()}</small>
+                    </div>
+                    <div class="summary-content" style="margin-top: 1rem; font-size: 0.9rem;">${item.summary ? (item.summary.substring(0, 200)) + '...' : ( item.processed ? 'Error in Processing Summary' : 'Summary creation is in Progress') }</div>
+                    <button class="btn btn-outline" onclick="viewFullSummary(${item.id})" style="margin-top: 1rem;">View Full</button>
+                </div>
+            `).join('');
+        }
+
+        // Fetch Explore Summaries with Infinite Scroll
+        async function fetchExploreSummaries() {
+            if (!authToken || isLoading) {
+                return;
+            }
+            
+            try {
+                isLoading = true;
+                
+                // Show appropriate loader
+                if (currentPage === 1) {
+                    exploreSummariesLoading.style.display = 'block';
+                    exploreSummariesContent.style.display = 'none';
+                    exploreSummariesEmpty.style.display = 'none';
+                } else {
+                    infiniteScrollLoader.style.display = 'block';
+                }
+                
+                const response = await fetch(`${SUMMARIZER_HOST}/summarizer/list?page=${currentPage}&offset=${SUMMARIES_PER_PAGE}`, {
+                    method: 'GET',
+                    headers: {
+                        'accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const newSummaries = data.summaries || [];
+                    
+                    // Check if we have more data to load
+                    hasMore = newSummaries.length === SUMMARIES_PER_PAGE;
+                    
+                    // Add new summaries to the collection
+                    allExploreSummaries = [...allExploreSummaries, ...newSummaries];
+                    
+                    updateExploreSummaries();
+                } else {
+                    console.error('Failed to fetch explore summaries:', response.status);
+                    if (currentPage === 1) {
+                        showAlert('Failed to load summaries. Please try again.', 'error');
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching explore summaries:', error);
+                if (currentPage === 1) {
+                    showAlert('Network error. Please try again.', 'error');
+                }
+            } finally {
+                isLoading = false;
+                exploreSummariesLoading.style.display = 'none';
+                infiniteScrollLoader.style.display = 'none';
+                
+                // Show content after first load
+                if (currentPage === 1) {
+                    exploreSummariesContent.style.display = 'block';
+                }
+            }
+        }
+
+        // Update explore summaries display
+        function updateExploreSummaries() {
+            const summaries = allExploreSummaries;
+            
+            if (summaries.length === 0 && currentPage === 1) {
+                exploreSummariesEmpty.style.display = 'block';
+                exploreSummariesContent.style.display = 'none';
+                return;
+            }
+            
+            exploreSummariesEmpty.style.display = 'none';
+            exploreSummariesContent.style.display = 'block';
+            
+            // Update summaries list
+            exploreSummariesList.innerHTML = summaries.map(item => `
+                <div class="summary-item">
+                    <div class="summary-item-header">
+                        <div class="summary-item-url"><strong>URL:</strong> ${item.url}</div>
+                        <div class="summary-item-date">${new Date(item.created_at).toLocaleDateString()}</div>
+                    </div>
+                    <div class="summary-content" style="font-size: 0.9rem; margin-bottom: 1rem;">${item.summary ? (item.summary.substring(0, 200)) + '...' : ( item.processed ? 'Error in Processing Summary' : 'Summary creation is in Progress') }</div>
+                    <div class="summary-item-actions">
+                        <button class="btn btn-outline" onclick="viewFullSummary(${item.id})">View Full</button>
+                        <button class="btn btn-danger" onclick="deleteExploreSummary(${item.id})">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // View full summary
+        function viewFullSummary(id) {
+            const summary = [...recentSummaries, ...allExploreSummaries].find(item => item.id === id);
+            if (summary) {
+                // Set the flag that we're viewing a full summary
+                isViewingFullSummary = true;
+                currentSummaryId = id;
+                
+                // Show the summarize page
+                showPage('summarize');
+                
+                // Update the UI for viewing a full summary
+                updateSummarizePageForFullSummary(summary);
+            }
+        }
+
+        // Delete summary from explore page
+        async function deleteExploreSummary(id) {
+            if (!confirm('Are you sure you want to delete this summary? This action cannot be undone.')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${SUMMARIZER_HOST}/summarizer/remove/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    showAlert(data.msg || 'Summary deleted successfully!', 'success');
+                    
+                    // Remove from local state
+                    allExploreSummaries = allExploreSummaries.filter(item => item.id !== id);
+                    recentSummaries = recentSummaries.filter(item => item.id !== id);
+                    
+                    // Update UI
+                    updateExploreSummaries();
+                    updateRecentSummaries();
+                } else {
+                    const errorData = await response.json();
+                    showAlert(errorData.detail || 'Failed to delete summary. Please try again.', 'error');
+                }
+            } catch (error) {
+                console.error('Delete summary error:', error);
+                showAlert('Network error. Please try again.', 'error');
+            }
+        }
+
+        // Update the summarize page when viewing a full summary
+        function updateSummarizePageForFullSummary(summary) {
+            // Hide the "Summarize Now" button
+            summarizeNowBtn2.style.display = 'none';
+            
+            // Show the back button
+            backToProfileBtn.style.display = 'inline-block';
+            
+            // Disable the URL input and set the value
+            contentUrlInput.value = summary.url;
+            contentUrlInput.disabled = true;
+            
+            // Hide the summarize form
+            document.querySelector('.summarize-form').style.display = 'none';
+            
+            // Display the summary
+            summaryContent.textContent = summary.summary || (summary.processed ? 'Error in Processing Summary' : 'Summary creation is in Progress');
+            resultsSection.style.display = 'block';
+            
+            // Scroll to results
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Reset the summarize page to its default state
+        function resetSummarizePage() {
+            // Reset the flag
+            isViewingFullSummary = false;
+            currentSummaryId = null;
+            
+            // Show the "Summarize Now" button
+            summarizeNowBtn2.style.display = 'inline-block';
+            
+            // Show the back button (always visible now)
+            backToProfileBtn.style.display = 'inline-block';
+            
+            // Enable the URL input and clear the value
+            contentUrlInput.disabled = false;
+            contentUrlInput.value = '';
+            
+            // Show the summarize form
+            document.querySelector('.summarize-form').style.display = 'block';
+            
+            // Hide the results section
+            resultsSection.style.display = 'none';
+        }
+
+        // Handle Delete Summary
+        async function handleDeleteSummary() {
+            if (!currentSummaryId) {
+                showAlert('No summary selected for deletion.', 'error');
+                return;
+            }
+            
+            if (!confirm('Are you sure you want to delete this summary? This action cannot be undone.')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${SUMMARIZER_HOST}/summarizer/remove/${currentSummaryId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    showAlert(data.msg || 'Summary deleted successfully!', 'success');
+                    
+                    // Remove the deleted summary from the recent summaries list
+                    recentSummaries = recentSummaries.filter(item => item.id !== currentSummaryId);
+                    allExploreSummaries = allExploreSummaries.filter(item => item.id !== currentSummaryId);
+                    
+                    // Update UI
+                    updateRecentSummaries();
+                    updateExploreSummaries();
+                    
+                    // Go back to profile page
+                    showPage('profile');
+                } else {
+                    const errorData = await response.json();
+                    showAlert(errorData.detail || 'Failed to delete summary. Please try again.', 'error');
+                }
+            } catch (error) {
+                console.error('Delete summary error:', error);
+                showAlert('Network error. Please try again.', 'error');
+            }
+        }
+
+        // Handle Content Summarization - Real API Call
         async function handleSummarize(e) {
             e.preventDefault();
             
@@ -972,95 +1455,46 @@
             summarizeSubmitBtn.disabled = true;
             
             try {
-                // Simulate API call with timeout
-                await new Promise(resolve => setTimeout(resolve, 2000));
+                // Real API call to create summary
+                const response = await fetch(`${SUMMARIZER_HOST}/summarizer/summarize`, {
+                    method: 'POST',
+                    headers: {
+                        'accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({
+                        url: url
+                    })
+                });
                 
-                // Generate demo summary based on URL type
-                let demoSummary = '';
-                if (url.includes('youtube.com') || url.includes('youtu.be')) {
-                    demoSummary = `YouTube Video Summary (Demo):\n\nThis is a demo summary for the YouTube video at: ${url}\n\nKey points from this video would include:\n• Main topic overview\n• Important insights and findings\n• Key takeaways for the viewer\n• Actionable recommendations\n\nWhen integrated with the actual API, this would show a real summary extracted from the video content.`;
-                } else if (url.includes('spotify.com') || url.includes('podcast')) {
-                    demoSummary = `Audio/Podcast Summary (Demo):\n\nThis is a demo summary for the audio content at: ${url}\n\nKey discussion points would include:\n• Main themes and topics covered\n• Important quotes or statements\n• Key insights shared by speakers\n• Main conclusions or calls to action\n\nWhen integrated with the actual API, this would show a real summary extracted from the audio content.`;
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // Show success message with summary ID
+                    showAlert(`${data.msg} (ID: ${data.id})`, 'success');
+                    
+                    // Clear the form
+                    summarizeForm.reset();
+                    
+                    // Redirect to Explore Past Summaries page
+                    currentPage = 1;
+                    allExploreSummaries = [];
+                    showPage('explore-summaries');
+                    fetchExploreSummaries();
+                    
                 } else {
-                    demoSummary = `Web Page Summary (Demo):\n\nThis is a demo summary for the web page at: ${url}\n\nKey content points would include:\n• Main topic and thesis of the article\n• Important facts and statistics\n• Key arguments and supporting evidence\n• Conclusions and recommendations\n\nWhen integrated with the actual API, this would show a real summary extracted from the web page content.`;
+                    const errorData = await response.json();
+                    showAlert(errorData.detail || 'Failed to create summary. Please try again.', 'error');
                 }
-                
-                // Display the summary
-                summaryContent.textContent = demoSummary;
-                resultsSection.style.display = 'block';
-                
-                // Save to recent summaries
-                saveToRecentSummaries(url, demoSummary);
-                
-                // Scroll to results
-                resultsSection.scrollIntoView({ behavior: 'smooth' });
-                
-                showAlert('Demo summary generated successfully!', 'success');
             } catch (error) {
                 console.error('Summarization error:', error);
-                showAlert('Error generating summary. Please try again.', 'error');
+                showAlert('Network error. Please try again.', 'error');
             } finally {
                 // Reset button state
                 summarizeBtnText.textContent = 'Summarize';
                 summarizeSpinner.style.display = 'none';
                 summarizeSubmitBtn.disabled = false;
-            }
-        }
-
-        // Save summary to recent summaries
-        function saveToRecentSummaries(url, summary) {
-            const summaryItem = {
-                id: Date.now(),
-                url: url,
-                summary: summary,
-                date: new Date().toLocaleString(),
-                type: url.includes('youtube') ? 'YouTube' : 
-                      url.includes('spotify') || url.includes('podcast') ? 'Audio' : 'Web Page'
-            };
-            
-            recentSummaries.unshift(summaryItem);
-            // Keep only the last 5 summaries
-            if (recentSummaries.length > 5) {
-                recentSummaries = recentSummaries.slice(0, 5);
-            }
-            
-            localStorage.setItem('sumora_recent_summaries', JSON.stringify(recentSummaries));
-            updateRecentSummaries();
-        }
-
-        // Update recent summaries display
-        function updateRecentSummaries() {
-            if (recentSummaries.length === 0) {
-                recentSummariesPlaceholder.style.display = 'block';
-                recentSummariesList.innerHTML = '';
-                return;
-            }
-            
-            recentSummariesPlaceholder.style.display = 'none';
-            recentSummariesList.innerHTML = recentSummaries.map(item => `
-                <div class="summary-card" style="margin-top: 1rem;">
-                    <div class="summary-header">
-                        <h4 class="summary-title">${item.type} Summary</h4>
-                        <small>${item.date}</small>
-                    </div>
-                    <p><strong>URL:</strong> ${item.url}</p>
-                    <div class="summary-content" style="margin-top: 1rem; font-size: 0.9rem;">
-                        ${item.summary.substring(0, 200)}...
-                    </div>
-                    <button class="btn btn-outline" onclick="viewFullSummary(${item.id})" style="margin-top: 1rem;">View Full</button>
-                </div>
-            `).join('');
-        }
-
-        // View full summary
-        function viewFullSummary(id) {
-            const summary = recentSummaries.find(item => item.id === id);
-            if (summary) {
-                summaryContent.textContent = summary.summary;
-                document.getElementById('content-url').value = summary.url;
-                resultsSection.style.display = 'block';
-                showPage('summarize');
-                resultsSection.scrollIntoView({ behavior: 'smooth' });
             }
         }
 

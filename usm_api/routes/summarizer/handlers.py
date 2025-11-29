@@ -71,7 +71,7 @@ def summarize(request: Request, request_body: validator_models.SummarizerRequest
     # Return Generic Response
     return JSONResponse(
         status_code=status.HTTP_201_CREATED,
-        content={"msg": "summarization in progress", "id": summarization.id},
+        content={"msg": "Summarization in progress", "id": summarization.id},
     )
 
 @router.get('/list')
@@ -93,7 +93,8 @@ def get_summary(request: Request, pagination: validator_models.Pagination= Depen
 
     try:
         with request.state.db() as session:
-            extracted_summary = session.query(db_models.Summary).filter(db_models.Summary.user_id == user_id, db_models.Summary.processed == True, db_models.Summary.is_deleted == False).order_by(-db_models.Summary.updated_at).offset((page-1)*offset).limit(offset).all()
+            extracted_summary = session.query(db_models.Summary).filter(db_models.Summary.user_id == user_id, db_models.Summary.is_deleted == False).order_by(-db_models.Summary.updated_at).offset((page-1)*offset).limit(offset).all()
+            
             extracted_summary = list(extracted_summary)
     except Exception as e:
         logger.error(f'Error in Extracting summaries for user_id {user_id} : {e}')
@@ -119,7 +120,7 @@ def get_summary(request: Request, pagination: validator_models.Pagination= Depen
     )
 
 @router.delete('/remove/{summary_id}')
-def get_summary(request: Request, summary_id: int):
+def remove_summary(request: Request, summary_id: int):
     if not request.state.user:
         logger.error("Unauthorized access attempt to /summarize")
         error_response = validator_models.ErrorResponse(
@@ -163,7 +164,7 @@ def get_summary(request: Request, summary_id: int):
             extracted_summary.deleted_at = datetime.now()
             session.add(extracted_summary) 
             session.commit()
-            session.refresh()
+            session.refresh(extracted_summary)
             logger.info(f"Summary with id {summary_id} has been deleted by user {user_id}")
 
     except Exception as e:

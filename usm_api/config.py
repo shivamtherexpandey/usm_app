@@ -1,4 +1,5 @@
 import os
+import json
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -17,3 +18,5 @@ class Config:
     SUMMARIZATION_LLM_MODEL = os.getenv("SUMMARIZATION_LLM_MODEL")
     SUMMARIZATION_METHOD = os.getenv('  ', 'map_reduce')
     LLM_API_KEY = os.getenv('GOOGLE_API_KEY')
+
+    CORS_ALLOWED_ORIGINS = json.loads(os.getenv('CORS_ALLOWED_ORIGINS', '[]'))

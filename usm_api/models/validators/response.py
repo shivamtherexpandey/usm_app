@@ -7,6 +7,7 @@ class SummaryResponse(BaseModel):
     id: int
     url: str
     summary: str | None
+    processed: int | None
     created_at: datetime | str
     updated_at: datetime | str
     
