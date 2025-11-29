@@ -5,6 +5,7 @@ from starlette.types import ASGIApp
 from sqlalchemy.orm import Session
 from utility import database_helper
 
+
 class DBSessionMiddleware(BaseHTTPMiddleware):
     def __init__(self, app: ASGIApp):
         super().__init__(app)

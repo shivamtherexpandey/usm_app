@@ -7,17 +7,23 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('usm_user', '0001_initial'),
+        ("usm_user", "0001_initial"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='subscription',
-            name='user',
+            model_name="subscription",
+            name="user",
         ),
         migrations.AddField(
-            model_name='user',
-            name='subscription',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='users', to='usm_user.subscription'),
+            model_name="user",
+            name="subscription",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="users",
+                to="usm_user.subscription",
+            ),
         ),
     ]

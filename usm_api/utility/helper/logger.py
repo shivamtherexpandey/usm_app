@@ -2,7 +2,10 @@ import logging
 import sys
 from pathlib import Path
 
-def init_logger(log_file: str = "file.log", level: int = logging.INFO) -> logging.Logger:
+
+def init_logger(
+    log_file: str = "file.log", level: int = logging.INFO
+) -> logging.Logger:
     logger = logging.getLogger("service")
     logger.setLevel(level)
 
@@ -31,6 +34,7 @@ def init_logger(log_file: str = "file.log", level: int = logging.INFO) -> loggin
         logger.propagate = False
 
     return logger
+
 
 # Initialize once here so all modules can just import it
 logger = init_logger()

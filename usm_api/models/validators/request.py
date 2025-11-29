@@ -1,6 +1,7 @@
 from pydantic import BaseModel, field_validator
 from urllib.parse import urlparse
 
+
 class SummarizerRequest(BaseModel):
     url: str
 
@@ -14,7 +15,8 @@ class SummarizerRequest(BaseModel):
         if parsed.scheme not in ("http", "https") or not parsed.netloc:
             raise ValueError("url must be a valid HTTP or HTTPS URL")
         return v
-    
+
+
 class Pagination(BaseModel):
     page: int = 1
     offset: int = 10
@@ -23,10 +25,10 @@ class Pagination(BaseModel):
     def validate_offset(cls, v: int) -> int:
         if 1 <= v <= 100:
             return v
-        raise ValueError('offset needs to be between 1 and 100')
-    
+        raise ValueError("offset needs to be between 1 and 100")
+
     @field_validator("page")
     def validate_page(cls, v: int) -> int:
         if 1 <= v:
             return v
-        raise ValueError('page needs to be more than 0')
+        raise ValueError("page needs to be more than 0")

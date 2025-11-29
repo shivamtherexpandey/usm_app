@@ -8,6 +8,7 @@ from models.db.user import User
 
 _TZ = timezone(Config.TIMEZONE)
 
+
 class Summary(SQLModel, table=True):
     __tablename__ = "summaries"
 
@@ -35,6 +36,9 @@ class Summary(SQLModel, table=True):
             nullable=False,
         ),
     )
-    deleted_at: Optional[datetime] = Field(default=None, sa_column=Column(DateTime(timezone=True), nullable=True))
+    deleted_at: Optional[datetime] = Field(
+        default=None, sa_column=Column(DateTime(timezone=True), nullable=True)
+    )
+
 
 Summary.user = Relationship(back_populates="summaries")

@@ -11,6 +11,7 @@ from fastapi.responses import JSONResponse
 from models import validator_models
 from sqlmodel import Session
 
+
 class AuthMiddleware(BaseHTTPMiddleware):
     def __init__(
         self,
@@ -101,7 +102,9 @@ class AuthMiddleware(BaseHTTPMiddleware):
             except Exception:
                 # fallback to select if get fails
                 result = session.exec(
-                    select(self.user_model).where(self.user_model.id == int(user_identifier))
+                    select(self.user_model).where(
+                        self.user_model.id == int(user_identifier)
+                    )
                 )
                 user = result.scalar_one_or_none()
 

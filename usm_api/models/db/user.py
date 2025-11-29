@@ -36,7 +36,9 @@ class User(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     email: str = Field(nullable=False, unique=True, max_length=254)
     password: str = Field(nullable=False, max_length=128)
-    subscription_id: Optional[int] = Field(default=None, foreign_key="usm_user_subscription.id")
+    subscription_id: Optional[int] = Field(
+        default=None, foreign_key="usm_user_subscription.id"
+    )
 
     is_active: bool = Field(default=True, nullable=False)
     is_staff: bool = Field(default=False, nullable=False)

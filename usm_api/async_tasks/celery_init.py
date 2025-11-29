@@ -14,7 +14,7 @@ celery_app.conf.update(
     accept_content=["json"],
     timezone=Config.TIMEZONE,
     enable_utc=False,
-    imports=[] # Import Tasks
+    imports=[],  # Import Tasks
 )
 
 # celery cmd
